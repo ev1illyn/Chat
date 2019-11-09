@@ -24,6 +24,7 @@
      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
      <script type="text/javascript" src="/socket.io/socket.io.js"></script>
      <script type="text/javascript">
+
               var socket = io.connect();
        
                $("form#chat").submit(function(e){
@@ -40,7 +41,7 @@
                
                $("form#login").submit(function(e){
                     e.preventDefault();
-                    //ENVIAR NOME DO USER PRA MENSAGEM
+                    //ENVIAR NOME DO USER PRO CHAT E MENSAGEM
                     console.log($(this).find("#apelido").val());
                     socket.emit("entrar", $(this).find("#apelido").val(), function(valido){
                     if(valido){

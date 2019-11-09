@@ -40,13 +40,17 @@ function resposta (req, res) {
 //o módulo vai emitir para todos os sockets conectados com o servidor, o eventos
 io.on("connection", function(socket){
 
+	socket.apelido;
+
 	//cria apelido para o chat
 	//pegar USUÁRIO DA SESSÃO OU DO ADMIN
 	socket.on("entrar", function(apelido, callback){
 		console.log('apelido '+ apelido);
 		if(!(apelido in usuarios)){
+			
 			socket.apelido = apelido;
 			usuarios[apelido] = socket;
+
 			io.sockets.emit("atualizar usuarios", Object.keys(usuarios));
 
 			///emitir ícone verde bolinha online
@@ -60,7 +64,9 @@ io.on("connection", function(socket){
 
 	// Atualizar Mensagens e passará a mensagem mais nova com a data
     socket.on("enviar mensagem", function(mensagem_enviada, callback){
-        mensagem_enviada = "[ " + pegarDataAtual() + " ]: " + mensagem_enviada;
+
+		//criar caixinha de texto e posicionar
+        mensagem_enviada = "[ " + pegarDataAtual() + " ]: " + socket.apelido + " : " + mensagem_enviada;
  
         io.sockets.emit("atualizar mensagens", mensagem_enviada);
 
