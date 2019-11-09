@@ -69,9 +69,14 @@ io.on("connection", function(socket){
 	});
 	
 	//FUNÇÃO DE DISCONNECT, MUDAR, AO INVÉS DE COLOCAR UMA MENSAGEM, COLOCAR ÍCONE DA BOLINHA VERDE ONLINE
+	//remove o socket armazenado e o apelido da lista de usuários
 	socket.on("disconnect", function(){
 		delete usuarios[socket.apelido];
+
+		//atualiza a lista de usuários dos clientes
 		io.sockets.emit("atualizar usuarios", Object.keys(usuarios));
+
+		//mensagem avisando que o usuário saiu da sala
 		io.sockets.emit("atualizar mensagens", "[ " + pegarDataAtual() + " ] " + socket.apelido + " saiu da sala");
 	});
 });
