@@ -8,6 +8,9 @@ var fs = require('fs');
 //módulo do Socket.IO
 var io = require('socket.io')(app);
 
+//armazena apelidos dos users
+var usuarios = [];
+
 app.listen(3000);
 
 console.log("Aplicação está em execução...");
@@ -34,9 +37,28 @@ function resposta (req, res) {
 }
 
 //resposta à conexão do cliente ao servidor
-//o módulo vai emitir para todos os sockets conectados com o servidor, o evento Atualizar Mensagens
-// e passará a mensagem mais nova com a data
+//o módulo vai emitir para todos os sockets conectados com o servidor, o eventos
 io.on("connection", function(socket){
+
+	//cria apelido para o chat
+	//pegar USUÁRIO DA SESSÃO OU DO ADMIN
+	socket.on("entrar", function(apelido, callback){
+		console.log('apelido '+ apelido);
+		if(!(apelido in usuarios)){
+			socket.apelido = apelido;
+			usuarios[apelido] = socket;
+			io.sockets.emit("atualizar usuarios", Object.keys(usuarios));
+
+			///emitir ícone verde bolinha online
+			io.sockets.emit("atualizar mensagens", "[ " + pegarDataAtual() + " ] " + apelido + " acabou de entrar na sala");
+	 
+			callback(true);
+		}else{
+			callback(false);
+		}
+   });
+
+	// Atualizar Mensagens e passará a mensagem mais nova com a data
     socket.on("enviar mensagem", function(mensagem_enviada, callback){
         mensagem_enviada = "[ " + pegarDataAtual() + " ]: " + mensagem_enviada;
  
@@ -44,7 +66,14 @@ io.on("connection", function(socket){
 
         //método que limpa o campo
         callback();
-    });
+	});
+	
+	//FUNÇÃO DE DISCONNECT, MUDAR, AO INVÉS DE COLOCAR UMA MENSAGEM, COLOCAR ÍCONE DA BOLINHA VERDE ONLINE
+	socket.on("disconnect", function(){
+		delete usuarios[socket.apelido];
+		io.sockets.emit("atualizar usuarios", Object.keys(usuarios));
+		io.sockets.emit("atualizar mensagens", "[ " + pegarDataAtual() + " ] " + socket.apelido + " saiu da sala");
+	});
 });
 
 
