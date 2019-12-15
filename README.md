@@ -1,2 +1,2 @@
 # ChatJS
-chat with NodeJS - ESII
+chat with NodeJS and Socket.io
